@@ -1,20 +1,35 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header is always the block name: Table (no header)
-  const cells = [['Table (no header)']];
-  // Each direct child .divider is a row block
-  const dividers = Array.from(element.querySelectorAll(':scope > .divider'));
-  dividers.forEach(divider => {
-    // Each divider contains a .w-layout-grid as the actual row
+  // Header row: single cell exactly as example
+  const headerRow = ['Table (no header)'];
+
+  // Get all immediate child dividers representing a row
+  const dividerRows = Array.from(element.querySelectorAll(':scope > .divider'));
+
+  // For each divider, extract the grid layout's heading and text
+  const dataRows = dividerRows.map(divider => {
     const grid = divider.querySelector('.w-layout-grid');
-    if (!grid) return;
-    // The grid should have two children: the question (heading), and the answer (richtext)
-    const children = Array.from(grid.children);
-    if (children.length < 2) return;
-    // Place both existing elements into the cell as an array, to preserve formatting and semantics
-    cells.push([[children[0], children[1]]]);
+    if (!grid) return ['','']; // Defensive: two empty cells if grid missing
+
+    // Collect heading and content
+    const heading = Array.from(grid.children).find(child => child.classList.contains('h4-heading'));
+    const content = Array.from(grid.children).find(child => child.classList.contains('rich-text'));
+    // Always two columns for each row
+    return [heading || '', content || ''];
   });
-  // Replace the original element with the newly created table
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+
+  // Assemble table: header (single cell), then each data row (two cells)
+  const tableData = [headerRow, ...dataRows];
+  // Use createTable; table will have two columns for data rows, one for header
+  const table = WebImporter.DOMUtils.createTable(tableData, document);
+  // Fix: merge header row columns so the header appears as a single cell across the two columns
+  if (table.rows.length > 0 && table.rows[0].cells.length > 1) {
+    table.rows[0].cells[0].colSpan = 2;
+    // Remove any extra cells beyond the first in the header row
+    while (table.rows[0].cells.length > 1) {
+      table.rows[0].deleteCell(1);
+    }
+  }
+  // Replace the original element with the table
   element.replaceWith(table);
 }

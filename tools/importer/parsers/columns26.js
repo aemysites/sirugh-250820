@@ -1,54 +1,39 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Get the main content container inside the section
+  // Get the main container
   const container = element.querySelector('.container');
   if (!container) return;
 
-  // Get the outer grid containing all block content
-  const topGrid = container.querySelector('.w-layout-grid.grid-layout');
-  if (!topGrid) return;
+  // Get the main grid (holds heading, paragraph, and inner grid)
+  const columnsGrid = container.querySelector('.grid-layout.grid-gap-sm.y-bottom');
+  if (!columnsGrid) return;
+  
+  // Extract heading, paragraph, inner grid (with divider, avatar etc)
+  const heading = columnsGrid.querySelector('p.h2-heading');
+  const paragraph = columnsGrid.querySelector('p.paragraph-lg');
+  const innerGrid = columnsGrid.querySelector('.w-layout-grid.grid-gap-sm.w-node-_3ef8ef40-2915-728f-b826-c7b8d23344dd-34b92918');
+  if (!innerGrid) return;
 
-  // Get all direct children of the top grid
-  const children = Array.from(topGrid.children);
-  // children[0] = heading, children[1] = quote, children[2] = inner grid
+  // Get divider, avatar row, logoDiv from inner grid
+  const divider = innerGrid.querySelector('.divider');
+  const flex = innerGrid.querySelector('.flex-horizontal');
+  const logoDiv = innerGrid.querySelector('.utility-display-inline-block');
 
-  // Defensive: check for each part before using
-  const heading = children[0] || null;
-  const quote = children[1] || null;
-  const innerGrid = children[2] || null;
+  // Build left column: group all left-side content in a single div
+  const leftCol = document.createElement('div');
+  if (heading) leftCol.appendChild(heading);
+  if (paragraph) leftCol.appendChild(paragraph);
+  if (divider) leftCol.appendChild(divider);
+  if (flex) leftCol.appendChild(flex);
 
-  // For the inner grid, get relevant inner children
-  // Expected: divider, author info row, icon row
-  let authorRow = null;
-  let iconRow = null;
-  if (innerGrid) {
-    const innerGridDivs = Array.from(innerGrid.children);
-    authorRow = innerGridDivs[1] || null;
-    iconRow = innerGridDivs[2] || null;
-  }
+  // Build right column: only logo svg
+  const rightCol = document.createElement('div');
+  if (logoDiv) rightCol.appendChild(logoDiv);
 
-  // Build left (column 1): heading and author info
-  const leftColContent = [];
-  if (heading) leftColContent.push(heading);
-  if (authorRow) leftColContent.push(authorRow);
-
-  // Build right (column 2): quote and icon
-  const rightColContent = [];
-  if (quote) rightColContent.push(quote);
-  if (iconRow) rightColContent.push(iconRow);
-
-  // Table header must be exactly as specified
-  const headerRow = ['Columns (columns26)'];
-
-  // Row with two columns of content
-  const columnsRow = [leftColContent, rightColContent];
-
-  // Create the columns block table
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    columnsRow,
-  ], document);
-
-  // Replace original element with the new block table
-  element.replaceWith(table);
+  const cells = [
+    ['Columns (columns26)'],
+    [leftCol, rightCol]
+  ];
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

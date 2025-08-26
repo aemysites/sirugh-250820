@@ -1,16 +1,36 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row as in example
+  // Block header row
   const headerRow = ['Cards (cards17)'];
-  // Each card: direct child 
-  const cardDivs = Array.from(element.querySelectorAll(':scope > .utility-aspect-1x1'));
-  // Each card contains exactly one <img>
-  const rows = cardDivs.map(div => {
-    const img = div.querySelector('img'); // Should always be present per spec
-    // The second column must exist, but since there's no text content in the HTML, use empty string
-    return [img, ''];
+
+  // Get all immediate card blocks (divs)
+  const cardDivs = element.querySelectorAll(':scope > div');
+  const rows = [];
+
+  cardDivs.forEach((cardDiv) => {
+    // Find the first image in the card
+    const img = cardDiv.querySelector('img');
+    // For cards that have only an image in HTML, use the alt text as card text
+    let textCell;
+    if (img && img.alt && img.alt.trim()) {
+      // Prefer to wrap the alt text in a <p> as the card text
+      const p = document.createElement('p');
+      p.textContent = img.alt.trim();
+      textCell = p;
+    } else {
+      // No alt text: empty string
+      textCell = '';
+    }
+    // Each row is [image, text cell]
+    rows.push([img, textCell]);
   });
-  const cells = [headerRow, ...rows];
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(block);
+
+  // Build the table
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    ...rows
+  ], document);
+
+  // Replace the original element with the new block table
+  element.replaceWith(table);
 }

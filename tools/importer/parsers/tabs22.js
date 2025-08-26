@@ -1,33 +1,45 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: get immediate child elements matching selector
-  function getDirectChildren(parent, selector) {
-    return Array.from(parent.querySelectorAll(':scope > ' + selector));
-  }
+  // Get the tab menu and content wrappers
+  const tabMenu = element.querySelector('.w-tab-menu');
+  const tabContent = element.querySelector('.w-tab-content');
+  if (!tabMenu || !tabContent) return;
 
-  // Extract tab labels
-  const tabMenu = getDirectChildren(element, 'div')[0];
-  const tabLinks = getDirectChildren(tabMenu, 'a');
-  const tabLabels = tabLinks.map(link => {
-    const labelDiv = link.querySelector('div');
-    return labelDiv ? labelDiv.textContent.trim() : link.textContent.trim();
+  // Get all tab menu links (labels)
+  const tabLinks = Array.from(tabMenu.querySelectorAll('a'));
+  // Get all tab panes (contents)
+  const tabPanes = Array.from(tabContent.querySelectorAll('.w-tab-pane'));
+
+  // Build table rows: header row (single column), then each tab row (two columns)
+  const cells = [];
+  // Header row: single cell
+  cells.push(['Tabs']);
+
+  // Each tab row: [Label, Content]
+  tabLinks.forEach((tabLink, i) => {
+    // Label extraction
+    let label = '';
+    const labelDiv = tabLink.querySelector('div');
+    if (labelDiv) {
+      label = labelDiv.textContent.trim();
+    } else {
+      label = tabLink.textContent.trim();
+    }
+    // Content extraction
+    let content = '';
+    const tabPane = tabPanes[i];
+    if (tabPane) {
+      // If tabPane has exactly one child, use that child for a clean reference
+      if (tabPane.children.length === 1) {
+        content = tabPane.firstElementChild;
+      } else {
+        content = tabPane;
+      }
+    }
+    cells.push([label, content]);
   });
 
-  // Extract tab content (each pane)
-  const tabContentContainer = getDirectChildren(element, 'div')[1];
-  const tabPaneDivs = getDirectChildren(tabContentContainer, 'div');
-  const tabContents = tabPaneDivs.map(tabDiv => {
-    // Each tabDiv contains a grid with actual content
-    const grid = getDirectChildren(tabDiv, 'div')[0];
-    return grid || tabDiv;
-  });
-
-  // Compose cells according to the block spec: header (single column), then rows for each tab (each 2 columns)
-  const headerRow = ['Tabs']; // must be a single column
-  const rows = tabLabels.map((label, i) => [label, tabContents[i]]); // each row has 2 columns
-  const cells = [headerRow, ...rows];
-
-  // Create table and replace the original element
+  // Create and replace
   const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

@@ -1,77 +1,54 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // 1. Header row
+  // Table header: must match the example exactly
   const headerRow = ['Hero (hero39)'];
 
-  // 2. Find the background image (first grid item's <img>)
-  let imageCell = '';
-  // Look for the main grid
-  const gridLayout = element.querySelector('.w-layout-grid.grid-layout');
-  if (gridLayout) {
-    // The first direct child grid div usually contains the image
-    const gridDivs = gridLayout.querySelectorAll(':scope > div');
-    for (const gridDiv of gridDivs) {
-      const img = gridDiv.querySelector('img');
-      if (img) {
-        imageCell = img;
-        break;
-      }
-    }
-  }
-  // Fallback to any img in the block
-  if (!imageCell) {
-    const img = element.querySelector('img');
-    if (img) imageCell = img;
-  }
+  // Get immediate child grid divs
+  const gridDivs = element.querySelectorAll(':scope > div > div');
 
-  // 3. Find the text content for the third row (headline, paragraph, CTA)
-  let contentCell = '';
-  let heading = null;
-  let paragraph = null;
-  let button = null;
-  if (gridLayout) {
-    const gridDivs = gridLayout.querySelectorAll(':scope > div');
-    // The second grid div should have the content
-    if (gridDivs.length > 1) {
-      const contentDiv = gridDivs[1];
-      heading = contentDiv.querySelector('h1, .h1-heading');
-      paragraph = contentDiv.querySelector('p');
-      button = contentDiv.querySelector('a.button, a.w-button');
-      const cellElements = [];
-      if (heading) cellElements.push(heading);
-      if (paragraph) cellElements.push(paragraph);
-      if (button) cellElements.push(button);
-      if (cellElements.length > 0) {
-        contentCell = cellElements;
-      } else {
-        // Fallback: use entire contentDiv
-        contentCell = contentDiv;
-      }
-    }
-  }
-  // Fallback to any heading, paragraph, button in the block
-  if (!contentCell) {
-    heading = element.querySelector('h1, .h1-heading');
-    paragraph = element.querySelector('p');
-    button = element.querySelector('a.button, a.w-button');
-    const cellElements = [];
-    if (heading) cellElements.push(heading);
-    if (paragraph) cellElements.push(paragraph);
-    if (button) cellElements.push(button);
-    if (cellElements.length > 0) {
-      contentCell = cellElements;
+  // 2nd row: Background image (use the first img only, as in example)
+  let imageRow = [''];
+  if (gridDivs.length > 0) {
+    const firstDiv = gridDivs[0];
+    const img = firstDiv.querySelector('img');
+    if (img) {
+      imageRow = [img];
     }
   }
 
-  // 4. Table rows
-  // The structure is: header, image, text content
+  // 3rd row: Headline, description, CTA
+  let contentRow = [''];
+  if (gridDivs.length > 1) {
+    const textDiv = gridDivs[1];
+    // Find the content grid if present
+    const innerGrid = textDiv.querySelector('.w-layout-grid') || textDiv;
+
+    // Gather headings (all levels), paragraphs, and CTA (a.button or within .button-group)
+    const headings = Array.from(innerGrid.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+    const paragraphs = Array.from(innerGrid.querySelectorAll('p'));
+    // Find CTA button/link: the example only wants text + link, so keep just the first CTA
+    let cta = null;
+    const buttonGroup = innerGrid.querySelector('.button-group');
+    if (buttonGroup) {
+      cta = buttonGroup.querySelector('a');
+    } else {
+      // fallback: check for any direct .button, if present
+      cta = innerGrid.querySelector('a.button');
+    }
+    // Compose cell content, preserving order and using references
+    const contentArr = [];
+    headings.forEach(h => contentArr.push(h));
+    paragraphs.forEach(p => contentArr.push(p));
+    if (cta) contentArr.push(cta);
+    contentRow = [contentArr];
+  }
+
+  // Build final block table
   const cells = [
     headerRow,
-    [imageCell],
-    [contentCell]
+    imageRow,
+    contentRow
   ];
-
-  // 5. Create and replace the block table
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

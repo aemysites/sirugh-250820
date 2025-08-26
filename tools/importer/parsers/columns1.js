@@ -1,58 +1,40 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header as in the example
-  const headerRow = ['Columns (columns1)'];
-
-  // Find grid layout (the actual columns container)
+  // Find the main grid layout in the header (the columns container)
   const grid = element.querySelector('.grid-layout');
-  let columns = [];
-  if (grid) {
-    columns = Array.from(grid.children);
-  } else {
-    // fallback to direct container children
-    const container = element.querySelector('.container');
-    if (container) {
-      columns = Array.from(container.children);
-    } else {
-      columns = Array.from(element.children);
-    }
-  }
+  if (!grid) return;
 
-  // There should be two columns: image and content. Find them robustly.
-  let imageCol = null;
-  let contentCol = null;
+  // Get the direct children of the grid (these are the columns)
+  const gridChildren = Array.from(grid.children);
+  if (gridChildren.length < 2) return;
 
-  for (const col of columns) {
-    if (col.tagName === 'IMG' || col.querySelector('img')) {
-      imageCol = col.tagName === 'IMG' ? col : col.querySelector('img');
-    } else if (
-      col.querySelector('h1') || col.querySelector('h2') || col.querySelector('h3')
-    ) {
-      contentCol = col;
-    }
-  }
+  // First column: image (could be img or picture)
+  const imageEl = gridChildren[0];
+  // Second column: content block (heading, subheading, button-group)
+  const contentEl = gridChildren[1];
 
-  // Content column: collect all meaningful content in order
-  let contentElements = [];
-  if (contentCol) {
-    // Find heading
-    const heading = contentCol.querySelector('h1,h2,h3');
-    if (heading) contentElements.push(heading);
-    // Find subheading/description
-    const subheading = contentCol.querySelector('p');
-    if (subheading) contentElements.push(subheading);
-    // Find button group
-    const buttonGroup = contentCol.querySelector('.button-group');
-    if (buttonGroup) contentElements.push(buttonGroup);
-  }
+  // Prepare array for the content column
+  const contentArr = [];
 
-  // Compose table row
-  const columnsRow = [imageCol, contentElements];
-  const cells = [headerRow, columnsRow];
+  // Find heading (prefer h1, but fallback to any heading)
+  const heading = contentEl.querySelector('h1, h2, h3, h4, h5, h6');
+  if (heading) contentArr.push(heading);
 
-  // Create block table
+  // Find subheading/paragraph
+  const paragraph = contentEl.querySelector('p');
+  if (paragraph) contentArr.push(paragraph);
+
+  // Find button group (could be one or more buttons)
+  const buttonGroup = contentEl.querySelector('.button-group');
+  if (buttonGroup) contentArr.push(buttonGroup);
+
+  // Compose cells: Header row and content row with the two columns
+  const cells = [
+    ['Columns (columns1)'],
+    [imageEl, contentArr]
+  ];
+
+  // Create and replace
   const block = WebImporter.DOMUtils.createTable(cells, document);
-
-  // Replace the original element
   element.replaceWith(block);
 }

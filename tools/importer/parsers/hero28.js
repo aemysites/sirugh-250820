@@ -1,56 +1,55 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row with exact name from spec
+  // Table header matches example
   const headerRow = ['Hero (hero28)'];
 
-  // Extract grid children for layout
-  const grid = element.querySelector('.w-layout-grid');
-  const gridChildren = grid ? Array.from(grid.children) : [];
-
-  // --- Row 2: Background image (optional) ---
-  let backgroundImg = null;
-  if (gridChildren.length > 0) {
-    // look for img element in hero image container
-    backgroundImg = gridChildren[0].querySelector('img');
-  }
-  // If image is missing, produce an empty cell
-  const imgRow = [backgroundImg || ''];
-
-  // --- Row 3: Headline, subheading, CTA ---
+  // Find all direct children of grid layout (robust against variations)
+  const gridLayout = element.querySelector('.w-layout-grid');
+  let imageEl = null;
   let contentEl = null;
-  if (gridChildren.length > 1) {
-    // typical layout for hero text
-    contentEl = gridChildren[1].querySelector('.utility-margin-bottom-6rem') || gridChildren[1];
-  }
-  let contentCells = [];
-  if (contentEl) {
-    // headings
-    const heading = contentEl.querySelector('h1');
-    if (heading) contentCells.push(heading);
-    // subheadings - look for h2, h3, paragraphs (for generality)
-    ['h2', 'h3', 'p'].forEach(tag => {
-      const el = contentEl.querySelector(tag);
-      if (el) contentCells.push(el);
-    });
-    // CTA/button group
-    const buttonGroup = contentEl.querySelector('.button-group');
-    if (buttonGroup && buttonGroup.children.length > 0) {
-      contentCells.push(buttonGroup);
+
+  if (gridLayout) {
+    const gridChildren = gridLayout.children;
+    // Find image: look for an <img> tag in any child
+    for (let i = 0; i < gridChildren.length; i++) {
+      const img = gridChildren[i].querySelector('img');
+      if (img && !imageEl) {
+        imageEl = img;
+      }
+    }
+    // Find content: look for a heading (h1, h2, etc.) in any child
+    for (let i = 0; i < gridChildren.length; i++) {
+      if (gridChildren[i].querySelector('h1, h2, h3, h4, h5, h6, p, a, button')) {
+        // Avoid duplicating the image cell in case it also contains headings
+        if (gridChildren[i] !== imageEl?.parentElement?.parentElement) {
+          contentEl = gridChildren[i];
+          break;
+        }
+      }
+    }
+    // Fallbacks for edge cases
+    if (!imageEl && gridChildren.length > 0) {
+      // Sometimes image might be deeply nested, so look for first img anywhere
+      imageEl = gridLayout.querySelector('img');
+    }
+    if (!contentEl && gridChildren.length > 1) {
+      // If not found, use second grid item for content
+      contentEl = gridChildren[1];
     }
   }
-  // If no specific content, reference the entire block for resilience
-  if (contentCells.length === 0 && contentEl) {
-    contentCells = [contentEl];
-  }
-  // Third row is always a single cell, can be an array (multiple elements)
-  const textRow = [contentCells.length === 1 ? contentCells[0] : contentCells];
 
-  // Compose the final cells array
-  const cells = [headerRow, imgRow, textRow];
+  // Edge case: No image/content found, put empty string
+  const imageCell = imageEl || '';
+  const contentCell = contentEl || '';
 
-  // Create table block according to spec
+  // Table: 1 column, 3 rows as required
+  const cells = [
+    headerRow,
+    [imageCell],
+    [contentCell]
+  ];
+
+  // Create table block and replace element
   const block = WebImporter.DOMUtils.createTable(cells, document);
-
-  // Replace original element with table block
   element.replaceWith(block);
 }
