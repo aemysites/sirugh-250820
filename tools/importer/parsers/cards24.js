@@ -1,46 +1,34 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header as specified
+  // Prepare header
   const headerRow = ['Cards (cards24)'];
-  const rows = [headerRow];
 
-  // Each immediate child <a> is a card
+  // Find all card links
   const cards = Array.from(element.querySelectorAll(':scope > a'));
-  cards.forEach((card) => {
-    // First column: image (mandatory)
-    let image = null;
-    const aspectDiv = card.querySelector('.utility-aspect-2x3');
-    if (aspectDiv) {
-      image = aspectDiv.querySelector('img');
-    }
 
-    // Second column: text content
-    const textParts = [];
-    // Tag and Date row
-    const metaDiv = card.querySelector('.flex-horizontal');
-    if (metaDiv) {
-      // build a div containing each meta bit styled as original
-      const metaContainer = document.createElement('div');
-      Array.from(metaDiv.children).forEach((child) => {
-        const span = document.createElement('span');
-        span.textContent = child.textContent.trim();
-        metaContainer.appendChild(span);
-        metaContainer.appendChild(document.createTextNode(' '));
-      });
-      textParts.push(metaContainer);
+  const rows = cards.map(card => {
+    // 1st cell: The card image (reference the actual <img> element)
+    let img = null;
+    const imgWrapper = card.querySelector('.utility-aspect-2x3');
+    if (imgWrapper) {
+      img = imgWrapper.querySelector('img');
     }
-    // Heading (mandatory)
-    const heading = card.querySelector('h3, .h4-heading');
+    // 2nd cell: All the text content for the card
+    // Use existing elements for tags/date/heading
+    const cellContent = [];
+    const metaBar = card.querySelector('.flex-horizontal');
+    if (metaBar) {
+      cellContent.push(metaBar);
+    }
+    const heading = card.querySelector('h3');
     if (heading) {
-      // Reference the existing heading element instead of cloning
-      textParts.push(heading);
+      cellContent.push(heading);
     }
-    rows.push([
-      image || '',
-      textParts
-    ]);
+    return [img ? img : '', cellContent];
   });
 
-  const table = WebImporter.DOMUtils.createTable(rows, document);
+  // Build the block table
+  const cells = [headerRow, ...rows];
+  const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

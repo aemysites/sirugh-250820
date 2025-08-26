@@ -1,20 +1,27 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Get all immediate children of the grid root; these are the columns
-  const columns = Array.from(element.querySelectorAll(':scope > div'));
-
-  // Compose header row: EXACTLY one cell, matching the example
+  // Header row as specified
   const headerRow = ['Columns (columns38)'];
 
-  // Compose content row: one cell per image (or per column if not image)
-  const contentRow = columns.map(col => {
-    const img = col.querySelector('img');
-    return img ? img : col;
+  // Get direct children of the grid container (representing columns)
+  const columns = Array.from(element.querySelectorAll(':scope > div'));
+
+  // For each column, include all of its child nodes (not just images)
+  // This captures text, lists, images, buttons, etc.
+  const cellsRow = columns.map(col => {
+    // Filter out empty text nodes
+    const nodes = Array.from(col.childNodes).filter(node => {
+      return (
+        node.nodeType !== Node.TEXT_NODE || (node.textContent && node.textContent.trim() !== '')
+      );
+    });
+    // If only one node, just return it. If multiple, return as array.
+    if (nodes.length === 1) {
+      return nodes[0];
+    }
+    return nodes;
   });
 
-  // Table structure matches example: first row is header, one cell; next row is content with N cells
-  const cells = [headerRow, contentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-
+  const table = WebImporter.DOMUtils.createTable([headerRow, cellsRow], document);
   element.replaceWith(table);
 }

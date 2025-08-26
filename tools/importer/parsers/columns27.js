@@ -1,20 +1,30 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // 1. Find the grid layout (contains the columns)
-  const grid = element.querySelector('.grid-layout');
+  // Locate the grid layout which contains the columns content
+  const container = element.querySelector('div.container');
+  if (!container) return;
+  const grid = container.querySelector('.grid-layout');
   if (!grid) return;
-  // 2. Find direct children of grid (columns)
+
+  // Get all immediate children of the grid (the columns)
   const columns = Array.from(grid.children);
-  // Check for empty columns
+
+  // Defensive: ensure we have at least two columns (text and image)
   if (columns.length < 2) return;
 
-  // 3. Table header row exactly as the example
+  // For this layout, left column is a div with multiple elements, right column is an image
+  // We reference the existing DOM nodes directly
+
+  // Table header as per requirements and example
   const headerRow = ['Columns (columns27)'];
-  // 4. Second row: reference the actual elements in each column
-  // (never clone, just reference the actual element)
-  const contentRow = columns.map(col => col);
-  // 5. Build table
-  const table = WebImporter.DOMUtils.createTable([headerRow, contentRow], document);
-  // 6. Replace the original section with the block table
-  element.replaceWith(table);
+
+  // The two columns become two cells of the row
+  const contentRow = [columns[0], columns[1]];
+
+  // Compose the table and replace the element
+  const block = WebImporter.DOMUtils.createTable([
+    headerRow,
+    contentRow,
+  ], document);
+  element.replaceWith(block);
 }

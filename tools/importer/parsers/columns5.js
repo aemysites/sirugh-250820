@@ -1,34 +1,39 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row must be exactly as specified and have one column
-  const headerRow = ['Columns (columns5)'];
-
-  // Find main grid containing the columns
-  const mainGrid = element.querySelector('.grid-layout.grid-gap-xxl.utility-min-height-100dvh');
+  // Find the main columns grid (contains two main columns)
+  const mainGrid = element.querySelector('.grid-layout.tablet-1-column');
   if (!mainGrid) return;
-  // Get all immediate children (columns) of main grid
-  const columns = Array.from(mainGrid.children);
 
-  // Left content: find the grid that contains heading, paragraph, and buttons
-  let leftCellContent = [];
-  const leftCol = columns.find(col => col.classList.contains('w-layout-grid'));
-  if (leftCol) {
-    // Grab all direct children of leftCol (should include all block content)
-    leftCellContent = Array.from(leftCol.children);
+  // Get direct children of the grid (should be 2: left content, right image)
+  const cols = Array.from(mainGrid.children);
+
+  // Left column: has text content and buttons
+  let textCol = null;
+  let imgCol = null;
+
+  for (const child of cols) {
+    if (
+      child.querySelector &&
+      child.querySelector('h2') &&
+      child.querySelector('.w-richtext')
+    ) {
+      textCol = child;
+    } else if (child.tagName === 'IMG') {
+      imgCol = child;
+    }
   }
 
-  // Right content: find the image (single img element)
-  let rightCellContent = [];
-  const rightCol = columns.find(col => col.tagName === 'IMG');
-  if (rightCol) rightCellContent = [rightCol];
+  // Defensive fallback if not found
+  if (!textCol) textCol = cols.find((c) => c.querySelector && c.querySelector('h2')) || cols[0];
+  if (!imgCol) imgCol = cols.find((c) => c.tagName === 'IMG') || cols[1];
 
-  // Build table: first row is header with one column, second row with two columns
-  const cells = [
+  // Compose table block
+  const headerRow = ['Columns (columns5)'];
+  const contentRow = [textCol, imgCol];
+  const block = WebImporter.DOMUtils.createTable([
     headerRow,
-    [leftCellContent, rightCellContent]
-  ];
+    contentRow
+  ], document);
 
-  // Replace original element with block table
-  const block = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(block);
 }

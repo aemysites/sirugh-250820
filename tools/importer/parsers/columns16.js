@@ -1,31 +1,29 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid of columns in the section
-  const columnsGrid = element.querySelector('.grid-layout');
-  if (!columnsGrid) return;
+  // The block header
+  const headerRow = ['Columns (columns16)'];
 
-  // Get all direct children (columns)
-  const columnDivs = Array.from(columnsGrid.children);
+  // Find the grid containing columns
+  const grid = element.querySelector('.grid-layout');
+  if (!grid) return;
 
-  // For each column, get its main content element (img)
-  // Each cell in the second row should be a single column's content
-  const columnCells = columnDivs.map(col => {
-    const aspectDiv = col.querySelector('.utility-aspect-2x3');
-    if (aspectDiv) {
-      const img = aspectDiv.querySelector('img');
-      if (img) return img;
-      return aspectDiv;
+  // For each direct child (column) in the grid, extract the main content
+  // In this HTML, each grid child contains an image inside a nested .utility-aspect-2x3
+  // For generic columns, we want the full column content, not just the image
+  const columns = Array.from(grid.children).map(col => {
+    // Select all direct children of the column's aspect ratio container if present, else fallback to col
+    const aspect = col.querySelector('.utility-aspect-2x3');
+    if (aspect && aspect.children.length > 0) {
+      // If the aspect container has multiple children, return them as an array
+      return aspect.children.length === 1 ? aspect.firstElementChild : Array.from(aspect.children);
     }
-    return col;
+    // Fallback: if no aspect container, take all direct children
+    return col.children.length === 1 ? col.firstElementChild : Array.from(col.children);
   });
 
-  // First row: header, must be exactly one cell
-  const headerRow = ['Columns (columns16)'];
-  // Second row: N columns, each is a cell
+  // Output block table: header (1 cell), then content row (1 cell per column)
+  const tableCells = [headerRow, columns];
 
-  // Table rows structure
-  const cells = [headerRow, columnCells];
-
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  const table = WebImporter.DOMUtils.createTable(tableCells, document);
   element.replaceWith(table);
 }

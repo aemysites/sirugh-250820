@@ -1,41 +1,18 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row matches the example exactly
+  // Get all direct children (each is a column cell)
+  const columns = Array.from(element.querySelectorAll(':scope > div'));
+
+  // Guard: If no columns found, do nothing
+  if (!columns.length) return;
+
+  // Header row as required by spec
   const headerRow = ['Columns (columns19)'];
+  // Second row: each cell contains the referenced column element
+  const contentRow = columns;
 
-  // Get all immediate children; each is a column
-  const columns = Array.from(element.children);
-
-  // Determine target columns per row (as per example: 4 columns per row)
-  const columnsPerRow = 4;
-  const rows = [];
-
-  // For each column, gather the content (svg + paragraph)
-  const cells = columns.map((col) => {
-    const iconDiv = col.querySelector('.icon');
-    const svg = iconDiv ? iconDiv.querySelector('svg') : null;
-    const p = col.querySelector('p');
-    const content = [];
-    if (svg) {
-      const svgContainer = document.createElement('span');
-      svgContainer.appendChild(svg);
-      content.push(svgContainer);
-    }
-    if (p) {
-      content.push(p);
-    }
-    return content.length === 1 ? content[0] : content;
-  });
-
-  // Chunk the cells into rows of 4 columns each
-  for (let i = 0; i < cells.length; i += columnsPerRow) {
-    rows.push(cells.slice(i, i + columnsPerRow));
-  }
-
-  // Build the final table data array
-  const tableData = [headerRow, ...rows];
-  const block = WebImporter.DOMUtils.createTable(tableData, document);
-
+  // Create the table via the provided helper
+  const table = WebImporter.DOMUtils.createTable([headerRow, contentRow], document);
   // Replace the original element
-  element.replaceWith(block);
+  element.replaceWith(table);
 }

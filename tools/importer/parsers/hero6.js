@@ -1,35 +1,43 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Step 1: create header row matching the block name
+  // 1. Header row (must match the example EXACTLY)
   const headerRow = ['Hero (hero6)'];
 
-  // Step 2: Extract background image (first grid's first child img)
-  let bgImg = null;
-  const gridLayout = element.querySelector('.w-layout-grid.grid-layout');
-  if (gridLayout && gridLayout.children.length > 0) {
-    const bgCol = gridLayout.children[0];
-    bgImg = bgCol.querySelector('img');
-  }
+  // 2. Background Image Row: extract the <img> with class 'cover-image' (background image)
+  const bgImg = element.querySelector('img.cover-image') || null;
 
-  // Step 3: Extract card content (heading, subheading, call-to-action)
-  let cardContent = null;
-  if (gridLayout && gridLayout.children.length > 1) {
-    const contentCol = gridLayout.children[1];
-    // Try to find the card element directly
-    const card = contentCol.querySelector('.card');
-    if (card) {
-      cardContent = card;
+  // 3. Content Row: extract title, subheading, CTAs
+  let contentCell = null;
+  const card = element.querySelector('div.card');
+  if (card) {
+    const nodes = [];
+    // Collect all non-empty Element nodes (e.g., H1, P, button group)
+    card.childNodes.forEach(node => {
+      if (node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim())) {
+        // Only append if node has visible content
+        nodes.push(node);
+      }
+    });
+    if (nodes.length === 1) {
+      contentCell = nodes[0];
+    } else if (nodes.length > 1) {
+      const frag = document.createDocumentFragment();
+      nodes.forEach(n => frag.appendChild(n));
+      contentCell = frag;
     }
   }
 
-  // Step 4: Build cells array, handling missing data
-  const cells = [
+  // Fallback: if card is missing, leave cell empty (edge case)
+  if (!contentCell) contentCell = '';
+
+  // Build table rows
+  const rows = [
     headerRow,
-    [bgImg ? bgImg : ''],
-    [cardContent ? cardContent : '']
+    [bgImg],
+    [contentCell],
   ];
 
-  // Step 5: Create the table block and replace the original
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(block);
+  // Create table using helper and replace original element
+  const table = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(table);
 }

@@ -1,26 +1,31 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid containing the columns
-  const grid = element.querySelector('.w-layout-grid');
+  // Find the main grid layout
+  const grid = element.querySelector('.grid-layout');
   if (!grid) return;
 
-  const children = Array.from(grid.children);
-  if (children.length < 4) return;
+  // Get all direct children of the grid
+  const columns = Array.from(grid.children);
 
-  // Prepare columns as per layout (3 columns: name, tags, main content)
-  const col1 = children[0];
-  const col2 = children[1];
-  // col3: heading + rich text together
+  // Column 1: Taylor Brooks and tags
+  const col1 = document.createElement('div');
+  if (columns[0]) col1.appendChild(columns[0]);
+  if (columns[1]) col1.appendChild(columns[1]);
+
+  // Column 2: Heading
+  const col2 = document.createElement('div');
+  if (columns[2]) col2.appendChild(columns[2]);
+
+  // Column 3: Rich text
   const col3 = document.createElement('div');
-  col3.appendChild(children[2]);
-  col3.appendChild(children[3]);
+  if (columns[3]) col3.appendChild(columns[3]);
 
-  // Table header: single column with block name
-  const headerRow = ['Columns (columns30)'];
-  // Content row: 3 columns (cells)
-  const contentRow = [col1, col2, col3];
+  // Header row: must be a single cell array
+  const cells = [
+    ['Columns (columns30)'],
+    [col1, col2, col3]
+  ];
 
-  const cells = [headerRow, contentRow];
   const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

@@ -1,45 +1,56 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Carousel header row
-  const headerRow = ['Carousel'];
-  const rows = [headerRow];
+  // Block header row, must be exactly 'Carousel'
+  const cells = [['Carousel']];
 
-  // Find the grid that contains the slides
-  const mainGrid = element.querySelector('.grid-layout');
-  if (!mainGrid) return;
-
-  // Look for all card-body grid layouts (each could be a slide)
-  // In this structure, there may be only one, but be robust for multiple
-  const cardBodies = mainGrid.querySelectorAll('.card-body .grid-layout');
-  for (const slideGrid of cardBodies) {
-    // Each slideGrid (desktop-3-column) contains an image and a text block
-    // Find all direct children (should be image and text)
-    const slideChildren = Array.from(slideGrid.children);
-    // Slides are grouped as pairs: image then content
-    for (let i = 0; i < slideChildren.length; i += 2) {
-      const img = slideChildren[i].tagName === 'IMG' ? slideChildren[i] : null;
-      const content = slideChildren[i+1] ? slideChildren[i+1] : '';
-      if (!img) continue;
-      rows.push([img, content]);
-    }
+  // Find the subgrid containing carousel content
+  // Usually it's the first '.grid-layout.desktop-3-column' inside card-body
+  const cardBody = element.querySelector('.card-body');
+  let grid;
+  if (cardBody) {
+    grid = cardBody.querySelector('.grid-layout.desktop-3-column, .grid-layout');
   }
+  // Fallback if not found
+  if (!grid) {
+    grid = element.querySelector('.grid-layout.desktop-3-column, .grid-layout');
+  }
+  if (!grid) return;
 
-  // If no cardBody found, check for fallback: image+content pairs in main grid
-  if (cardBodies.length === 0) {
-    // Sometimes each slide is just a div with img+content group
-    const slideCandidates = Array.from(mainGrid.children);
-    for (let i = 0; i < slideCandidates.length; i += 2) {
-      const img = slideCandidates[i].querySelector('img');
-      const content = slideCandidates[i+1] || '';
-      if (img) {
-        rows.push([img, content]);
+  // Get all immediate children of the grid - these are either images or text blocks
+  const slides = [];
+  const gridChildren = Array.from(grid.children);
+  let images = [], textBlocks = [];
+  gridChildren.forEach(child => {
+    if (child.tagName === 'IMG') {
+      images.push(child);
+    } else {
+      // Only include DIVs with meaningful text content
+      if (child.querySelector('h1,h2,h3,h4,h5,h6,p,a,button')) {
+        textBlocks.push(child);
       }
     }
+  });
+
+  // In the provided HTML, the first image (background bakery) is outside this grid, but inside the section
+  // Find all images inside the section that are NOT inside the carousel grid, and insert them at the beginning
+  const sectionImages = Array.from(element.querySelectorAll('img'));
+  sectionImages.forEach(img => {
+    if (!grid.contains(img) && img.src) {
+      images.unshift(img);
+      // For these, there's no corresponding text block
+      textBlocks.unshift('');
+    }
+  });
+
+  // Pair images and text blocks (slide: [image, textBlock])
+  const maxSlides = Math.max(images.length, textBlocks.length);
+  for (let i = 0; i < maxSlides; i++) {
+    const img = images[i] || '';
+    const text = textBlocks[i] || '';
+    cells.push([img, text]);
   }
 
-  // Only create block if there is at least one slide
-  if (rows.length > 1) {
-    const block = WebImporter.DOMUtils.createTable(rows, document);
-    element.replaceWith(block);
-  }
+  // Create block table and replace original element
+  const table = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(table);
 }
