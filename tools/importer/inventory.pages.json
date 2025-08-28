@@ -1,0 +1,42 @@
+{
+  "templates": [
+    {
+      "name": "E-commerce Product Listing",
+      "cluster": 1,
+      "pages": [
+        {
+          "url": "https://www.aemshop.net/apparel",
+          "uuid": "34374bf72dfd50482af0c10d9aa7006d98929c97"
+        },
+        {
+          "url": "https://www.aemshop.net/cart",
+          "uuid": "932bd72c55e9168f484bd6bd575696d92c88d693"
+        },
+        {
+          "url": "https://www.aemshop.net/checkout",
+          "uuid": "497aa0a0c0183934b9f898fbab844f59fee45d7e"
+        }
+      ]
+    },
+    {
+      "name": "'E-commerce product page'",
+      "cluster": 2,
+      "pages": [
+        {
+          "url": "https://www.aemshop.net/products/llama-plush-shortie/ADB336",
+          "uuid": "67fb0a01f4ee0562bc2214ff891224e401079174"
+        }
+      ]
+    },
+    {
+      "name": "'Portfolio Showcase'",
+      "cluster": 3,
+      "pages": [
+        {
+          "url": "https://www.aemshop.net/",
+          "uuid": "270371d68aaca8b51eab8c32538239a7b456a41f"
+        }
+      ]
+    }
+  ]
+}
