@@ -1,0 +1,237 @@
+{
+  "originUrl": "https://www.aemshop.net",
+  "aborted": false,
+  "lastCrawled": "https://www.aemshop.net/",
+  "urls": [
+    {
+      "url": "https://www.aemshop.net/",
+      "source": "SITEMAPS",
+      "targetPath": "/",
+      "id": "270371d68aaca8b51eab8c32538239a7b456a41f"
+    },
+    {
+      "url": "https://www.aemshop.net/apparel",
+      "source": "SITEMAPS",
+      "targetPath": "/apparel",
+      "id": "34374bf72dfd50482af0c10d9aa7006d98929c97"
+    },
+    {
+      "url": "https://www.aemshop.net/cart",
+      "source": "SITEMAPS",
+      "targetPath": "/cart",
+      "id": "932bd72c55e9168f484bd6bd575696d92c88d693"
+    },
+    {
+      "url": "https://www.aemshop.net/checkout",
+      "source": "SITEMAPS",
+      "targetPath": "/checkout",
+      "id": "497aa0a0c0183934b9f898fbab844f59fee45d7e"
+    },
+    {
+      "url": "https://www.aemshop.net/create-return",
+      "source": "SITEMAPS",
+      "targetPath": "/create-return",
+      "id": "8734d28067faa4b030740b8033ee85d262ceb099"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/account",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/account",
+      "id": "2f921d50fff59406eb4f7ed37313359879088b7d"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/account/confirm/",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/account/confirm",
+      "id": "ccdbda1789ad24b35cd3d85502822e555de9e529"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/account/createpassword/",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/account/createpassword",
+      "id": "e78e9ac2df247568dc5f53de5fdaedc498aede2a"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/address",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/address",
+      "id": "bfa2db7a3b25823489ade8876c09c81b1c501c70"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/create",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/create",
+      "id": "9f586ad8e9b8157065f675e713205e23a0859bcf"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/create-return",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/create-return",
+      "id": "e9a6c0f9ed60475dcf68c623096593103b11a4dd"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/createpassword",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/createpassword",
+      "id": "3ca20ce07c1bae5fa270905fb9bb83c1ac41e249"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/forgotpassword",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/forgotpassword",
+      "id": "088ce961bf40e526bfad8875b7ea425ed20bd1aa"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/login",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/login",
+      "id": "c8ffadca5fa68d71921c5e6e6b77f4c9aa61e150"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/order-details",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/order-details",
+      "id": "db8b5d75c4eb149f39a9f36e344fa6b3123ebf4f"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/orders",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/orders",
+      "id": "64ffdd7f20a03ecfdeb8f440764ad4882a7b923d"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/return-details",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/return-details",
+      "id": "5de57baf40ea361f0830e626d0fa7ab886e68244"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/returns",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/returns",
+      "id": "4d862535ff9c74614cdcde8e6b2287bb2cf85485"
+    },
+    {
+      "url": "https://www.aemshop.net/customer/sidebar-fragment",
+      "source": "SITEMAPS",
+      "targetPath": "/customer/sidebar-fragment",
+      "id": "9c1a2e0363a27c14b707206450c75c86a34bc40e"
+    },
+    {
+      "url": "https://www.aemshop.net/empty-cart",
+      "source": "SITEMAPS",
+      "targetPath": "/empty-cart",
+      "id": "17def231be817cca04d09880c71166402fba63a5"
+    },
+    {
+      "url": "https://www.aemshop.net/enrichment/category-banner",
+      "source": "SITEMAPS",
+      "targetPath": "/enrichment/category-banner",
+      "id": "d3b7368773a31863a93c6a0c4b1db0babb88bcd3"
+    },
+    {
+      "url": "https://www.aemshop.net/enrichment/product-banner",
+      "source": "SITEMAPS",
+      "targetPath": "/enrichment/product-banner",
+      "id": "78300ab3a1cb8f7b9c83a66e145500c2010e09fd"
+    },
+    {
+      "url": "https://www.aemshop.net/footer",
+      "source": "SITEMAPS",
+      "targetPath": "/footer",
+      "id": "3da327c1bd69351ce5b9403bccd5b323c37a3d37"
+    },
+    {
+      "url": "https://www.aemshop.net/mini-cart",
+      "source": "SITEMAPS",
+      "targetPath": "/mini-cart",
+      "id": "0bfeb64e6d7eca7cceef5403426a17e2a6416f4f"
+    },
+    {
+      "url": "https://www.aemshop.net/nav",
+      "source": "SITEMAPS",
+      "targetPath": "/nav",
+      "id": "ea33cb4f19c6a782ffe360c98a246a2300821de6"
+    },
+    {
+      "url": "https://www.aemshop.net/order-details",
+      "source": "SITEMAPS",
+      "targetPath": "/order-details",
+      "id": "a3bdf704a7461b0e93d1dddcea10e733771af20f"
+    },
+    {
+      "url": "https://www.aemshop.net/order-status",
+      "source": "SITEMAPS",
+      "targetPath": "/order-status",
+      "id": "c53ca30ddf8d84c5d9f498267a722bc6bbd96087"
+    },
+    {
+      "url": "https://www.aemshop.net/privacy-policy",
+      "source": "SITEMAPS",
+      "targetPath": "/privacy-policy",
+      "id": "e13f5cc5be8699087697a7f2d16a577c3109be81"
+    },
+    {
+      "url": "https://www.aemshop.net/products/default",
+      "source": "SITEMAPS",
+      "targetPath": "/products/default",
+      "id": "945508b469b9350c6ca77b909bc9c63885d60232"
+    },
+    {
+      "url": "https://www.aemshop.net/return-details",
+      "source": "SITEMAPS",
+      "targetPath": "/return-details",
+      "id": "ab181d792861299598cc1659ea87429d5239b6b3"
+    },
+    {
+      "url": "https://www.aemshop.net/sales/guest/view/",
+      "source": "SITEMAPS",
+      "targetPath": "/sales/guest/view",
+      "id": "c2c306c08f516f7cc864f777b7f1ecf721486f9a"
+    },
+    {
+      "url": "https://www.aemshop.net/sales/order/view/",
+      "source": "SITEMAPS",
+      "targetPath": "/sales/order/view",
+      "id": "d87f563bc2792a3077d47d341fc5268dade27d52"
+    },
+    {
+      "url": "https://www.aemshop.net/search",
+      "source": "SITEMAPS",
+      "targetPath": "/search",
+      "id": "82ad49779cd3a836d711936fec9ead815b0a37e9"
+    },
+    {
+      "url": "https://www.aemshop.net/store-switcher",
+      "source": "SITEMAPS",
+      "targetPath": "/store-switcher",
+      "id": "7c3c38dc23f49d5b0e9c49271d8f6c8c7a77d326"
+    },
+    {
+      "url": "https://www.aemshop.net/support",
+      "source": "SITEMAPS",
+      "targetPath": "/support",
+      "id": "8345ed8ddbd3594985b91a23a163e607bd8eb339"
+    },
+    {
+      "url": "https://www.aemshop.net/wishlist",
+      "source": "SITEMAPS",
+      "targetPath": "/wishlist",
+      "id": "fb68e1593d27a89d656933db1ced89e0bd646320"
+    }
+  ],
+  "crawlOptions": {
+    "timeout": 64800000,
+    "inclusionPatterns": [],
+    "exclusionPatterns": [],
+    "limit": 100,
+    "sameDomain": true,
+    "keepHash": false,
+    "strategy": "sitemaps",
+    "logger": {},
+    "strategiesAttempted": [
+      "SITEMAPS"
+    ]
+  },
+  "extractionErrors": []
+}
