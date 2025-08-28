@@ -1,0 +1,46 @@
+{
+  "originUrl": "https://www.aemshop.net",
+  "aborted": false,
+  "urls": [
+    {
+      "url": "https://www.aemshop.net/",
+      "source": "MANUAL",
+      "targetPath": "/",
+      "id": "270371d68aaca8b51eab8c32538239a7b456a41f"
+    },
+    {
+      "url": "https://www.aemshop.net/apparel",
+      "source": "MANUAL",
+      "targetPath": "/apparel",
+      "id": "34374bf72dfd50482af0c10d9aa7006d98929c97"
+    },
+    {
+      "url": "https://www.aemshop.net/cart",
+      "source": "MANUAL",
+      "targetPath": "/cart",
+      "id": "932bd72c55e9168f484bd6bd575696d92c88d693"
+    },
+    {
+      "url": "https://www.aemshop.net/checkout",
+      "source": "MANUAL",
+      "targetPath": "/checkout",
+      "id": "497aa0a0c0183934b9f898fbab844f59fee45d7e"
+    },
+    {
+      "url": "https://www.aemshop.net/products/llama-plush-shortie/ADB336",
+      "source": "MANUAL",
+      "targetPath": "/products/llama-plush-shortie/adb336",
+      "id": "67fb0a01f4ee0562bc2214ff891224e401079174"
+    }
+  ],
+  "lastCrawled": null,
+  "crawlOptions": {
+    "limit": 100,
+    "strategy": "manual",
+    "strategiesAttempted": [
+      "MANUAL"
+    ]
+  },
+  "extractionErrors": [],
+  "errorCountMessage": "none"
+}
